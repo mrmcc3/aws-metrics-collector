@@ -20,4 +20,6 @@
     #(instance? PutMetricDataRequest %)
     #(gen/fmap request (s/gen ::map))))
 
-(s/fdef request :args (s/cat :put-data ::map) :ret ::request)
+(s/fdef request
+  :args (s/cat :put-data ::map)
+  :ret ::request)

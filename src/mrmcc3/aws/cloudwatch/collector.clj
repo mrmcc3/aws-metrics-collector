@@ -8,16 +8,25 @@
     (com.amazonaws.services.cloudwatch
       AmazonCloudWatchAsyncClient AmazonCloudWatchAsyncClientBuilder)))
 
+(s/def ::batch-size (s/and int? #(<= 1 % 20)))
+(s/def ::batch-time (s/and int? #(>= % 1000)))
+(s/def ::buffer-size pos-int?)
+(s/def ::namespace string?)
+(s/def ::opts (s/keys :req-un [::namespace]
+                      :opt-un [::batch-size ::batch-time ::buffer-size]))
+
 (defn metric-chan
   ([opts] (metric-chan (AmazonCloudWatchAsyncClientBuilder/defaultClient) opts))
   ([client {:keys [namespace batch-size batch-time buffer-size]
-            :or   {batch-size 20 batch-time 60000 buffer-size 1000}}]
-   (let [input-ch   (a/chan (a/dropping-buffer buffer-size)
-                            (map metric/datum)
-                            (constantly ::bad-datum))
-         batch-ch   (a/chan (a/buffer 1)
-                            (map put-data/request)
-                            (constantly ::bad-request))
+            :or   {batch-size 20 batch-time 60000 buffer-size 1000}
+            :as   opts}]
+   {:pre [(s/valid? ::opts opts)]}
+   (let [input-ch (a/chan (a/dropping-buffer buffer-size)
+                          metric/datum-xform
+                          (constantly ::bad-datum))
+         batch-ch (a/chan (a/buffer 1)
+                          (map put-data/request)
+                          (constantly ::bad-request))
          timeout-fn #(a/timeout batch-time)]
 
      ;; batching
@@ -44,24 +53,3 @@
 
      input-ch)))
 
-;; specs
-
-(s/def ::batch-size (s/and int? #(<= 1 % 20)))
-(s/def ::batch-time (s/and int? #(>= % 1000)))
-(s/def ::buffer-size pos-int?)
-(s/def ::namespace string?)
-(s/def ::opts (s/keys :req-un [::namespace]
-                      :opt-un [::batch-size ::batch-time ::buffer-size]))
-
-(s/fdef metric-chan
-  :args (s/alt :one (s/cat :opts ::opts)
-               :two (s/cat :client #(instance? AmazonCloudWatchAsyncClient %)
-                           :opts ::opts)))
-
-(comment
-
-  (def ch (metric-chan {:namespace "Blash"}))
-  (a/close! ch)
-  (a/put! ch {:name "blah" :value 1})
-
-  )

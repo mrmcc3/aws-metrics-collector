@@ -11,12 +11,10 @@
 
 (s/def ::hi number?)
 (s/def ::lo number?)
-(s/def ::count number?)
+(s/def ::count pos-int?)
 (s/def ::sum number?)
-(s/def ::map (s/and (s/keys :opt-un [::hi ::lo ::count ::sum])
-                    #(not-empty %)))
+(s/def ::map (s/keys :req-un [::hi ::lo ::count ::sum]))
 
 (s/fdef statistic-set
   :args (s/cat :stat ::map)
   :ret #(instance? StatisticSet %))
-
