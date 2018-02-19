@@ -9,7 +9,13 @@ A collector is a core.async channel that:
 * batches metrics according to AWS limits
 * sends the batches periodically to Cloudwatch using the AWS Java SDK
 
-## Basic Usage
+## Usage
+
+[source, clojure]
+----
+{:deps {mrmcc3/aws-metrics-collector
+        {:git/url "https://github.com/mrmcc3/aws-metrics-collector" :sha "..."}}}
+----
 
 [source, clojure]
 ----
