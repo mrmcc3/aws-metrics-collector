@@ -32,7 +32,7 @@
      ;; batching
      (a/go-loop [batch [] timeout (timeout-fn)]
        (if (>= (count batch) batch-size)
-         (do (a/>! batch-ch {:metrics batch :namespace namespace})
+         (do (a/>! batch-ch {:datums batch :namespace namespace})
              (recur [] (timeout-fn)))
          (let [[metric ch] (a/alts! [input-ch timeout])]
            (if (= ch input-ch)
@@ -41,7 +41,7 @@
                ::bad-datum (recur batch timeout)
                (recur (conj batch metric) timeout))
              (do (when (seq batch)
-                   (a/>! batch-ch {:metrics batch :namespace namespace}))
+                   (a/>! batch-ch {:datums batch :namespace namespace}))
                  (recur [] (timeout-fn)))))))
 
      ;; requests
@@ -53,3 +53,18 @@
 
      input-ch)))
 
+;; dev only
+
+(comment
+
+  (def ch (metric-chan {:namespace "Test" :batch-time 1000}))
+
+  (a/onto-chan
+    ch
+    {:ResponseTime 123.2
+     :Requests {:hi 10 :lo 5 :sum 200 :count 200}}
+    false)
+
+  (a/close! ch)
+
+  )
