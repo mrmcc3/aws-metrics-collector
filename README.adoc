@@ -1,1 +1,49 @@
 # aws-metrics-collector
+
+Clojure AWS Cloudwatch metric collector.
+
+A collector is a core.async channel that:
+
+* accepts metrics as vanilla clojure data
+* drops non-conforming metrics
+* batches metrics according to AWS limits
+* sends the batches periodically to Cloudwatch using the AWS Java SDK
+
+
+## Basic Usage
+
+[source, clojure]
+----
+(require
+    '[mrmcc3.aws.cloudwatch.core :as cw]
+    '[clojure.core.async :as a])
+
+;; define a collector channel
+(def collector (cw/collector {:namespace "Test"}))
+
+;; for single metrics use a/put!
+(a/put! collector {:name "im-a-metric" :value 3.14}) ;; map-form
+(a/put! collector [:im-a-metric 3.14]) ;; pair-form
+
+
+;; for multiple metrics use a/onto-chan
+(a/onto-chan collector [{:name "ResponseTime" :value 125} ["RenderTime" 55.2]] false)
+
+;; or more conveniently
+(a/onto-chan
+    collector
+    {:ResponseTime 125
+     :RenderTime   55.2}
+    false)
+
+;; close the collector when finished
+(a/close! collector)
+----
+
+Note by default `collector` will use a default AWS Cloudwatch client
+so make sure the you have AWS credentials setup somewhere in the
+default chain.
+
+See the specs in the code for more info about the collector options
+and valid metric data. Aggregated statistics, storage resolution,
+timestamps and units are all supported!

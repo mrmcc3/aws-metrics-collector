@@ -1,4 +1,4 @@
-(ns mrmcc3.aws.cloudwatch.collector
+(ns mrmcc3.aws.cloudwatch.core
   (:require
     [clojure.spec.alpha :as s]
     [clojure.core.async :as a]
@@ -15,8 +15,8 @@
 (s/def ::opts (s/keys :req-un [::namespace]
                       :opt-un [::batch-size ::batch-time ::buffer-size]))
 
-(defn metric-chan
-  ([opts] (metric-chan (AmazonCloudWatchAsyncClientBuilder/defaultClient) opts))
+(defn collector
+  ([opts] (collector (AmazonCloudWatchAsyncClientBuilder/defaultClient) opts))
   ([client {:keys [namespace batch-size batch-time buffer-size]
             :or   {batch-size 20 batch-time 60000 buffer-size 1000}
             :as   opts}]
