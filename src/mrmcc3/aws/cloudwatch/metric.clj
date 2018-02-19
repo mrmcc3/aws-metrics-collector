@@ -85,7 +85,7 @@
   (s/exercise ::pair 1)
   (s/exercise ::data 1)
 
-  (s/exercise-fn `data->datums 1000)
+  (s/exercise-fn `data->datums)
 
   (into [] datum-xform {:ResponseTime 1.2
                         :a.b/Requests {:hi 1 :lo 1 :sum 1 :count 1}})

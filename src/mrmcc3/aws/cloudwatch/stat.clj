@@ -18,9 +18,7 @@
   (s/and (s/keys :req-un [::hi ::lo ::count ::sum])
          (fn [{:keys [hi lo]}] (>= hi lo))))
 
-(s/def ::set
-  (s/with-gen #(instance? StatisticSet %)
-              #(gen/fmap statistic-set (s/gen ::map))))
+(s/def ::set #(instance? StatisticSet %))
 
 ;; aws sdk interop
 
@@ -38,7 +36,6 @@
 (comment
 
   (s/exercise ::map)
-  (s/exercise ::set)
   (s/exercise-fn `statistic-set)
 
   )

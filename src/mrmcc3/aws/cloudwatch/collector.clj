@@ -61,8 +61,8 @@
 
   (a/onto-chan
     ch
-    {:ResponseTime 123.2
-     :Requests {:hi 10 :lo 5 :sum 200 :count 200}}
+    {:ResponseTime 150
+     :Requests {:hi 10 :lo 5 :sum 100 :count 200}}
     false)
 
   (a/close! ch)
