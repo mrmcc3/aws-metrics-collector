@@ -11,11 +11,13 @@ A collector is a core.async channel that:
 
 ## Usage
 
+image:https://img.shields.io/clojars/v/mrmcc3/aws-metrics-collector.svg[Clojars]
+
 [source, clojure]
 ----
 {:deps {mrmcc3/aws-metrics-collector
         {:git/url "https://github.com/mrmcc3/aws-metrics-collector"
-         :sha     "7f02d60b52141a80bd8eab5debe4e8c2c95c5b88"}}}
+         :sha     "a16baa17c7b71a684b2085c0e40913315fb85c6b"}}}
 ----
 
 [source, clojure]
